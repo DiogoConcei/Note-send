@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { API_URL, getHeaders } from "../../services/api";
 import styles from "./NotesList.module.scss";
 import { NoteCard } from "../../components/NoteCard/NoteCard";
-import { type Note } from "../../types";
+import { type Note, type Topic } from "../../types";
 
 const NotesList: React.FC = () => {
   const { token } = useAuth();
@@ -25,10 +25,10 @@ const NotesList: React.FC = () => {
       ]);
 
       if (notesRes.ok && topicsRes.ok) {
-        const [notesData, topicsData] = await Promise.all([
+        const [notesData, topicsData] = (await Promise.all([
           notesRes.json(),
           topicsRes.json(),
-        ]);
+        ])) as [Note[], Topic[]];
         setNotes(notesData);
         setTopics(topicsData);
       }
@@ -119,7 +119,9 @@ const NotesList: React.FC = () => {
             type="text"
             placeholder="Pesquisar notas..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
           />
         </div>
       </header>
@@ -128,7 +130,9 @@ const NotesList: React.FC = () => {
       <div className={styles.filterBar}>
         <button
           className={`${styles.topicFilter} ${selectedTopicId === null ? styles.active : ""}`}
-          onClick={() => setSelectedTopicId(null)}
+          onClick={() => {
+            setSelectedTopicId(null);
+          }}
         >
           Todos
         </button>
@@ -136,7 +140,9 @@ const NotesList: React.FC = () => {
           <button
             key={topic.id}
             className={`${styles.topicFilter} ${selectedTopicId === topic.id ? styles.active : ""}`}
-            onClick={() => setSelectedTopicId(topic.id)}
+            onClick={() => {
+              setSelectedTopicId(topic.id);
+            }}
             style={{ "--topic-color": topic.color } as React.CSSProperties}
           >
             <span className={styles.dot} />

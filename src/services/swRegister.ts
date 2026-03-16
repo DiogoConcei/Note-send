@@ -8,7 +8,7 @@ export const registerSW = () => {
             registration.scope
           );
         },
-        (err) => {
+        (err: unknown) => {
           console.log("ServiceWorker registration failed: ", err);
         }
       );

@@ -18,7 +18,9 @@ const CreateNote: React.FC = () => {
     content: "",
   });
 
-  const [errors, setErrors] = useState<{ topicId?: string; content?: string }>({});
+  const [errors, setErrors] = useState<{ topicId?: string; content?: string }>(
+    {}
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
@@ -30,21 +32,23 @@ const CreateNote: React.FC = () => {
           headers: getHeaders(token),
         });
         if (response.ok) {
-          const data = await response.json();
+          const data = (await response.json()) as Topic[];
           setTopics(data);
         }
       } catch (error) {
         console.error("Erro ao carregar tópicos:", error);
       }
     };
-    fetchTopics();
+    void fetchTopics();
   }, [token]);
 
   const validate = (): boolean => {
     const newErrors: { topicId?: string; content?: string } = {};
     if (!formData.topicId) newErrors.topicId = "Selecione um tópico";
-    if (!formData.content.trim()) newErrors.content = "A nota não pode estar vazia";
-    else if (formData.content.length < 10) newErrors.content = "A nota deve ter pelo menos 10 caracteres";
+    if (!formData.content.trim())
+      newErrors.content = "A nota não pode estar vazia";
+    else if (formData.content.length < 10)
+      newErrors.content = "A nota deve ter pelo menos 10 caracteres";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -52,7 +56,7 @@ const CreateNote: React.FC = () => {
 
   const handleAddTopic = async (label: string) => {
     const color = TOPIC_COLORS[topics.length % TOPIC_COLORS.length];
-    
+
     try {
       const response = await fetch(`${API_URL}/topics`, {
         method: "POST",
@@ -61,7 +65,7 @@ const CreateNote: React.FC = () => {
       });
 
       if (response.ok) {
-        const newTopic = await response.json();
+        const newTopic = (await response.json()) as Topic;
         setTopics((prev) => [...prev, newTopic]);
         setFormData((prev) => ({ ...prev, topicId: newTopic.id }));
         toast.success(`Tópico "${label}" criado!`);
@@ -92,7 +96,7 @@ const CreateNote: React.FC = () => {
 
         if (response.ok) {
           toast.success("Nota criada com sucesso!");
-          navigate("/");
+          void navigate("/");
         } else {
           toast.error("Erro ao criar nota.");
         }
@@ -119,45 +123,65 @@ const CreateNote: React.FC = () => {
             <TopicSelect
               topics={topics}
               selectedTopicId={formData.topicId}
-              onSelect={(topic) => setFormData((prev) => ({ ...prev, topicId: topic.id }))}
-              onAddTopic={handleAddTopic}
+              onSelect={(topic) => {
+                setFormData((prev) => ({ ...prev, topicId: topic.id }));
+              }}
+              onAddTopic={(label) => void handleAddTopic(label)}
             />
-            {errors.topicId && <span className={styles.error}>{errors.topicId}</span>}
+            {errors.topicId && (
+              <span className={styles.error}>{errors.topicId}</span>
+            )}
           </div>
 
           <div className={styles.field}>
             <div className={styles.labelRow}>
               <label htmlFor="content">Conteúdo</label>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className={styles.previewToggle}
-                onClick={() => setShowPreview(!showPreview)}
+                onClick={() => {
+                  setShowPreview(!showPreview);
+                }}
               >
                 {showPreview ? "Editar" : "Ver Preview"}
               </button>
             </div>
-            
+
             {showPreview ? (
               <div className={styles.previewArea}>
-                <ReactMarkdown>{formData.content || "*Nada para mostrar ainda...*"}</ReactMarkdown>
+                <ReactMarkdown>
+                  {formData.content || "*Nada para mostrar ainda...*"}
+                </ReactMarkdown>
               </div>
             ) : (
               <textarea
                 id="content"
                 value={formData.content}
-                onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, content: e.target.value }));
+                }}
                 placeholder="Use Markdown para formatar seu texto..."
                 rows={10}
               />
             )}
-            {errors.content && <span className={styles.error}>{errors.content}</span>}
+            {errors.content && (
+              <span className={styles.error}>{errors.content}</span>
+            )}
           </div>
 
           <div className={styles.actions}>
-            <button type="button" onClick={() => navigate("/")} className={styles.cancelBtn}>
+            <button
+              type="button"
+              onClick={() => void navigate("/")}
+              className={styles.cancelBtn}
+            >
               Cancelar
             </button>
-            <button type="submit" disabled={isSubmitting} className={styles.submitBtn}>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={styles.submitBtn}
+            >
               {isSubmitting ? "Salvando..." : "Criar Nota"}
             </button>
           </div>

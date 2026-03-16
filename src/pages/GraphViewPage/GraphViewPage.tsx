@@ -22,10 +22,10 @@ const GraphViewPage: React.FC = () => {
       ]);
 
       if (notesRes.ok && topicsRes.ok) {
-        const [notesData, topicsData] = await Promise.all([
+        const [notesData, topicsData] = (await Promise.all([
           notesRes.json(),
           topicsRes.json(),
-        ]);
+        ])) as [Note[], Topic[]];
         setNotes(notesData);
         setTopics(topicsData);
       }
@@ -42,7 +42,7 @@ const GraphViewPage: React.FC = () => {
   }, [fetchData]);
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={styles.container}

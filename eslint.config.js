@@ -7,7 +7,7 @@ import prettierPlugin from "eslint-plugin-prettier";
 
 export default ts.config(
   {
-    ignores: ["eslint.config.js", "dist"], // adiciona isso como primeiro item
+    ignores: ["eslint.config.js", "dist", "public"], // adiciona isso como primeiro item
   },
   js.configs.recommended,
   ...ts.configs.strictTypeChecked,
@@ -33,6 +33,7 @@ export default ts.config(
       ...reactHooks.configs.recommended.rules,
       "prettier/prettier": "warn",
       "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
     },
   },
   prettier

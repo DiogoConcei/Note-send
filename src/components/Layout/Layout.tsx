@@ -11,14 +11,18 @@ const Layout: React.FC = () => {
     <div className={styles.layout}>
       <Sidebar
         isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
+        onClose={() => {
+          setIsSidebarOpen(false);
+        }}
       />
 
       <main className={styles.mainContent}>
         <div className={styles.mobileHeader}>
           <button
             className={styles.menuButton}
-            onClick={() => setIsSidebarOpen(true)}
+            onClick={() => {
+              setIsSidebarOpen(true);
+            }}
           >
             <Menu size={24} />
           </button>

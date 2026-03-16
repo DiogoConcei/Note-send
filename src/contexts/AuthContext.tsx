@@ -88,10 +88,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         body: JSON.stringify({ email, password }),
       });
 
-      const data = (await response.json()) as { 
-        token: string; 
-        user: { id: number | string; email: string; name: string } 
-        message?: string
+      const data = (await response.json()) as {
+        token: string;
+        user: { id: number | string; email: string; name: string };
+        message?: string;
       };
 
       if (!response.ok) {
@@ -126,10 +126,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         body: JSON.stringify({ email, password, name: username }),
       });
 
-      const data = (await response.json()) as { 
-        token: string; 
-        user: { id: number | string; email: string; name: string } 
-        message?: string
+      const data = (await response.json()) as {
+        token: string;
+        user: { id: number | string; email: string; name: string };
+        message?: string;
       };
 
       if (!response.ok) {
@@ -146,7 +146,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
       toast.success("Conta criada com sucesso!");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro no registro";
+      const message =
+        error instanceof Error ? error.message : "Erro no registro";
       toast.error(message);
       throw error;
     }
@@ -160,10 +161,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         body: JSON.stringify({ idToken: credential }),
       });
 
-      const data = (await response.json()) as { 
-        token: string; 
-        user: { id: number | string; email: string; name: string } 
-        message?: string
+      const data = (await response.json()) as {
+        token: string;
+        user: { id: number | string; email: string; name: string };
+        message?: string;
       };
 
       if (!response.ok) {
@@ -181,7 +182,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       toast.success(`Entrou com Google: ${userData.name}`);
     } catch (error) {
       console.error("Erro no login Google", error);
-      const message = error instanceof Error ? error.message : "Falha no Google Login";
+      const message =
+        error instanceof Error ? error.message : "Falha no Google Login";
       toast.error(message);
       throw error;
     }

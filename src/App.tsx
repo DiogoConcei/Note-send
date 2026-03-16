@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -20,7 +20,13 @@ const Register = lazy(() => import("./pages/Register/Register"));
 
 // Loading simples para o suspense
 const PageLoading = () => (
-  <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+  <div
+    style={{
+      padding: "2rem",
+      textAlign: "center",
+      color: "var(--text-secondary)",
+    }}
+  >
     Carregando...
   </div>
 );
