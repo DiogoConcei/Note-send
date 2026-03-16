@@ -88,15 +88,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         body: JSON.stringify({ email, password }),
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = "Erro ao fazer login";
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          // A resposta não era JSON
+        }
+        throw new Error(errorMessage);
+      }
+
       const data = (await response.json()) as {
         token: string;
         user: { id: number | string; email: string; name: string };
         message?: string;
       };
-
-      if (!response.ok) {
-        throw new Error(data.message || "Erro ao fazer login");
-      }
 
       const { token: newToken, user: userData } = data;
       localStorage.setItem("token", newToken);
@@ -126,15 +134,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         body: JSON.stringify({ email, password, name: username }),
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = "Erro ao registrar";
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          // A resposta não era JSON
+        }
+        throw new Error(errorMessage);
+      }
+
       const data = (await response.json()) as {
         token: string;
         user: { id: number | string; email: string; name: string };
         message?: string;
       };
-
-      if (!response.ok) {
-        throw new Error(data.message || "Erro ao registrar");
-      }
 
       const { token: newToken, user: userData } = data;
       localStorage.setItem("token", newToken);
