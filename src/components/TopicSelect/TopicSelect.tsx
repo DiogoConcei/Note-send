@@ -96,7 +96,7 @@ export const TopicSelect: React.FC<TopicSelectProps> = ({
           </div>
 
           <div className={styles.addNew}>
-            <form onSubmit={handleAddTopic} className={styles.addInputWrapper}>
+            <div className={styles.addInputWrapper}>
               <input
                 type="text"
                 placeholder="Novo tópico..."
@@ -105,21 +105,36 @@ export const TopicSelect: React.FC<TopicSelectProps> = ({
                 onChange={(e) => {
                   setNewTopicLabel(e.target.value);
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (newTopicLabel.trim()) {
+                      onAddTopic(newTopicLabel.trim());
+                      setNewTopicLabel("");
+                    }
+                  }
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
               />
               <button
-                type="submit"
+                type="button"
                 className={styles.addButton}
                 disabled={!newTopicLabel.trim()}
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
+                  if (newTopicLabel.trim()) {
+                    onAddTopic(newTopicLabel.trim());
+                    setNewTopicLabel("");
+                  }
                 }}
               >
                 +
               </button>
-            </form>
+            </div>
           </div>
         </div>
       )}
