@@ -38,14 +38,6 @@ export const TopicSelect: React.FC<TopicSelectProps> = ({
     };
   }, []);
 
-  const handleAddTopic = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    if (newTopicLabel.trim()) {
-      onAddTopic(newTopicLabel.trim());
-      setNewTopicLabel("");
-    }
-  };
-
   return (
     <div className={styles.container} ref={containerRef}>
       <div
