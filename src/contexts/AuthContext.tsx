@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "sonner";
+import { API_URL } from "../services/api";
 
 interface User {
   id: string;
@@ -47,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
+    toast.info("Você saiu da sua conta.");
   };
 
   useEffect(() => {
@@ -55,7 +58,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (storedToken) {
         try {
           const decoded = jwtDecode<DecodedToken>(storedToken);
-          // Verificar se o token expirou
           if (decoded.exp * 1000 < Date.now()) {
             logout();
           } else {
@@ -79,29 +81,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const login = async (email: string, password: string) => {
-    const env = import.meta.env as unknown as Record<string, string>;
-    const apiUrl = env.VITE_API_URL || "http://localhost:3000/api";
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const response = await fetch(`${apiUrl}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+      const data = (await response.json()) as { 
+        token: string; 
+        user: { id: number | string; email: string; name: string } 
+        message?: string
+      };
 
-    const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Erro ao fazer login");
+      }
 
-    if (!response.ok) {
-      throw new Error(data.message || "Erro ao fazer login");
+      const { token: newToken, user: userData } = data;
+      localStorage.setItem("token", newToken);
+      setToken(newToken);
+      setUser({
+        id: userData.id.toString(),
+        email: userData.email,
+        username: userData.name,
+      });
+      toast.success(`Bem-vindo de volta, ${userData.name}!`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro no login";
+      toast.error(message);
+      throw error;
     }
-
-    const { token: newToken, user: userData } = data;
-    localStorage.setItem("token", newToken);
-    setToken(newToken);
-    setUser({
-      id: userData.id.toString(),
-      email: userData.email,
-      username: userData.name,
-    });
   };
 
   const register = async (
@@ -109,43 +119,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     username: string,
     password: string
   ) => {
-    const env = import.meta.env as unknown as Record<string, string>;
-    const apiUrl = env.VITE_API_URL || "http://localhost:3000/api";
+    try {
+      const response = await fetch(`${API_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name: username }),
+      });
 
-    const response = await fetch(`${apiUrl}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, name: username }),
-    });
+      const data = (await response.json()) as { 
+        token: string; 
+        user: { id: number | string; email: string; name: string } 
+        message?: string
+      };
 
-    const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Erro ao registrar");
+      }
 
-    if (!response.ok) {
-      throw new Error(data.message || "Erro ao registrar");
+      const { token: newToken, user: userData } = data;
+      localStorage.setItem("token", newToken);
+      setToken(newToken);
+      setUser({
+        id: userData.id.toString(),
+        email: userData.email,
+        username: userData.name,
+      });
+      toast.success("Conta criada com sucesso!");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro no registro";
+      toast.error(message);
+      throw error;
     }
-
-    const { token: newToken, user: userData } = data;
-    localStorage.setItem("token", newToken);
-    setToken(newToken);
-    setUser({
-      id: userData.id.toString(),
-      email: userData.email,
-      username: userData.name,
-    });
   };
 
   const loginWithGoogle = async (credential: string) => {
-    const env = import.meta.env as unknown as Record<string, string>;
-    const apiUrl = env.VITE_API_URL || "http://localhost:3000/api";
-
     try {
-      const response = await fetch(`${apiUrl}/auth/google`, {
+      const response = await fetch(`${API_URL}/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken: credential }),
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as { 
+        token: string; 
+        user: { id: number | string; email: string; name: string } 
+        message?: string
+      };
 
       if (!response.ok) {
         throw new Error(data.message || "Erro no login com Google");
@@ -159,9 +178,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         email: userData.email,
         username: userData.name,
       });
+      toast.success(`Entrou com Google: ${userData.name}`);
     } catch (error) {
       console.error("Erro no login Google", error);
-      throw error instanceof Error ? error : new Error("Falha ao autenticar com Google");
+      const message = error instanceof Error ? error.message : "Falha no Google Login";
+      toast.error(message);
+      throw error;
     }
   };
 

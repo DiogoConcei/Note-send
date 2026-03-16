@@ -1,3 +1,4 @@
+import React, { Suspense, lazy } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,10 +7,23 @@ import {
 } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Toaster } from "sonner";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import Login from "./pages/Login/Login";
-import Register from "./pages/Register/Register";
+import Layout from "./components/Layout/Layout";
+
+// Lazy loading das páginas para melhor performance
+const NotesList = lazy(() => import("./pages/NotesList/NotesList"));
+const CreateNote = lazy(() => import("./pages/CreateNote/CreateNote"));
+const GraphViewPage = lazy(() => import("./pages/GraphViewPage/GraphViewPage"));
+const Login = lazy(() => import("./pages/Login/Login"));
+const Register = lazy(() => import("./pages/Register/Register"));
+
+// Loading simples para o suspense
+const PageLoading = () => (
+  <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+    Carregando...
+  </div>
+);
 
 // Substitua pelo seu Client ID real do Google Cloud Console
 const GOOGLE_CLIENT_ID =
@@ -20,20 +34,27 @@ function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AuthProvider>
+        <Toaster position="top-right" richColors closeButton theme="dark" />
         <Router>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <Suspense fallback={<PageLoading />}>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<NotesList />} />
+                <Route path="create" element={<CreateNote />} />
+                <Route path="graph" element={<GraphViewPage />} />
+              </Route>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </Router>
       </AuthProvider>
     </GoogleOAuthProvider>
