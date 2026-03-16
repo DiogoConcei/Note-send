@@ -161,15 +161,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         body: JSON.stringify({ idToken: credential }),
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Erro na resposta do servidor:", errorText);
+        let errorMessage = "Erro no login com Google";
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          // A resposta não era JSON (ex: HTML de erro)
+          console.error("Resposta não era JSON:", errorText);
+        }
+        throw new Error(errorMessage);
+      }
+
       const data = (await response.json()) as {
         token: string;
         user: { id: number | string; email: string; name: string };
         message?: string;
       };
-
-      if (!response.ok) {
-        throw new Error(data.message || "Erro no login com Google");
-      }
 
       const { token: newToken, user: userData } = data;
       localStorage.setItem("token", newToken);
