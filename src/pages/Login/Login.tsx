@@ -114,7 +114,9 @@ const Login: React.FC = () => {
             }
             onError={() => {
               console.error("Google Login falhou no componente (onError)");
-              setError("Erro na inicialização do Google Login. Verifique o Client ID.");
+              setError(
+                "Erro na inicialização do Google Login. Verifique o Client ID."
+              );
             }}
           />
         </div>

@@ -37,14 +37,16 @@ const GOOGLE_CLIENT_ID =
   "SUA_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
 if (GOOGLE_CLIENT_ID === "SUA_GOOGLE_CLIENT_ID.apps.googleusercontent.com") {
-  console.warn("ATENÇÃO: VITE_GOOGLE_CLIENT_ID não está configurado. O login com Google não funcionará.");
+  console.warn(
+    "ATENÇÃO: VITE_GOOGLE_CLIENT_ID não está configurado. O login com Google não funcionará."
+  );
 }
 
 function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AuthProvider>
-        <Toaster position="top-right" richColors closeButton theme="dark" />
+        <Toaster position="top-right" richColors closeButton theme="light" />
         <Router>
           <Suspense fallback={<PageLoading />}>
             <Routes>

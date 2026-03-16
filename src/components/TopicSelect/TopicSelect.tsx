@@ -65,7 +65,12 @@ export const TopicSelect: React.FC<TopicSelectProps> = ({
       </div>
 
       {isOpen && (
-        <div className={styles.dropdown}>
+        <div
+          className={styles.dropdown}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <div className={styles.optionsList}>
             {topics.map((topic) => (
               <div
@@ -98,7 +103,7 @@ export const TopicSelect: React.FC<TopicSelectProps> = ({
                   setNewTopicLabel(e.target.value);
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     e.preventDefault();
                     e.stopPropagation();
                     if (newTopicLabel.trim()) {
@@ -106,9 +111,6 @@ export const TopicSelect: React.FC<TopicSelectProps> = ({
                       setNewTopicLabel("");
                     }
                   }
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
                 }}
               />
               <button
