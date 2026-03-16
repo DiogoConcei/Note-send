@@ -6,8 +6,8 @@ import prettier from "eslint-config-prettier";
 import prettierPlugin from "eslint-plugin-prettier";
 
 export default ts.config(
-    {
-    ignores: ["eslint.config.js"], // adiciona isso como primeiro item
+  {
+    ignores: ["eslint.config.js", "dist"], // adiciona isso como primeiro item
   },
   js.configs.recommended,
   ...ts.configs.strictTypeChecked,
@@ -19,15 +19,20 @@ export default ts.config(
     },
     languageOptions: {
       parserOptions: {
-        project: ["./tsconfig.app.json"],
+        project: ["./tsconfig.app.json", "./tsconfig.node.json"],
         tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    settings: {
+      react: {
+        version: "detect",
       },
     },
     rules: {
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       "prettier/prettier": "warn",
-      "react/react-in-jsx-scope": "off", 
+      "react/react-in-jsx-scope": "off",
     },
   },
   prettier
