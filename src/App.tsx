@@ -36,6 +36,10 @@ const GOOGLE_CLIENT_ID =
   (import.meta.env.VITE_GOOGLE_CLIENT_ID as string) ||
   "SUA_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
+if (GOOGLE_CLIENT_ID === "SUA_GOOGLE_CLIENT_ID.apps.googleusercontent.com") {
+  console.warn("ATENÇÃO: VITE_GOOGLE_CLIENT_ID não está configurado. O login com Google não funcionará.");
+}
+
 function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>

@@ -171,6 +171,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const loginWithGoogle = async (credential: string) => {
     try {
+      console.log(`Tentando login Google em: ${API_URL}/auth/google`);
       const response = await fetch(`${API_URL}/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -179,14 +180,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("Erro na resposta do servidor:", errorText);
-        let errorMessage = "Erro no login com Google";
+        console.error("Erro na resposta do servidor (Google):", errorText);
+        let errorMessage = `Erro no servidor (${response.status})`;
         try {
           const errorData = JSON.parse(errorText);
           errorMessage = errorData.message || errorMessage;
         } catch (e) {
           // A resposta não era JSON (ex: HTML de erro)
-          console.error("Resposta não era JSON:", errorText);
+          console.error("Resposta do servidor não é JSON:", errorText);
         }
         throw new Error(errorMessage);
       }

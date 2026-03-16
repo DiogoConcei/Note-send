@@ -46,8 +46,11 @@ const Login: React.FC = () => {
         await loginWithGoogle(credentialResponse.credential);
         await navigate(from, { replace: true });
       }
-    } catch {
-      setError("Falha na autenticação com Google");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Falha na autenticação com Google";
+      setError(message);
+      console.error("Erro detalhado Google Success:", err);
     }
   };
 
@@ -106,13 +109,13 @@ const Login: React.FC = () => {
 
         <div className={styles.social}>
           <GoogleLogin
-            onSuccess={(credentialResponse) => {
-              void handleGoogleSuccess(credentialResponse);
-            }}
+            onSuccess={(credentialResponse) =>
+              void handleGoogleSuccess(credentialResponse)
+            }
             onError={() => {
-              setError("Erro no login com Google");
+              console.error("Google Login falhou no componente (onError)");
+              setError("Erro na inicialização do Google Login. Verifique o Client ID.");
             }}
-            useOneTap
           />
         </div>
 
